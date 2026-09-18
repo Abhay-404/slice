@@ -1,0 +1,266 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Teach the Monster — design system v2
+   Bright, saturated, dimensional. v1 was flat and dark and read
+   as a document with a mascot stapled on. The fix isn't a new
+   palette, it's DEPTH: everything pressable has a hard bottom
+   edge and physically drops when pressed.
+
+   CASCADE NOTE: component classes live in @layer components so
+   Tailwind utilities still win over them. Unlayered, `.tm-press`
+   beat `rounded-full` and `min-h-*`, which forced callers into
+   inline styles. If you add a class here, put it in the layer.
+   ============================================================ */
+
+@theme {
+  /* Sky — the world sits outdoors, in daylight */
+  --color-sky: #7ecdf5;
+  --color-sky-low: #cfeeff;
+  --color-cloud: #ffffff;
+  --color-paper: #fffaf0;
+
+  /* Ink — warm plum, never grey, never pure black */
+  --color-ink: #2c2140;
+  --color-ink-soft: #6b6280;
+  --color-ink-faint: #a49dba;
+
+  /* Characters */
+  --color-monster: #3fcc85;
+  --color-monster-dark: #22a566;
+  --color-angel: #ffc53d;
+  --color-angel-dark: #e09a12;
+
+  /* Manipulatives */
+  --color-piece: #3fa9f5;
+  --color-piece-dark: #1f7fc4;
+  --color-piece-ghost: #e2edf6;
+
+  /* Feedback — amber for "not yet", never a harsh red at a child */
+  --color-yes: #3fcc85;
+  --color-yes-dark: #22a566;
+  --color-hmm: #ff9f1c;
+  --color-hmm-dark: #d97a00;
+
+  --font-display: var(--font-fredoka), "Trebuchet MS", system-ui, sans-serif;
+  --font-body: var(--font-nunito), "Segoe UI", system-ui, sans-serif;
+
+  /* Corner radius for the manipulatives. Every widget derives its own
+     corners from this (`calc(var(--radius-blob) * n)`), so dropping it
+     renders every fraction bar and pizza square. Do not remove. */
+  --radius-blob: 26px;
+}
+
+:root {
+  --tm-sky: var(--color-sky);
+  --tm-sky-low: var(--color-sky-low);
+  --tm-cloud: var(--color-cloud);
+  --tm-paper: var(--color-paper);
+  --tm-ink: var(--color-ink);
+  --tm-ink-soft: var(--color-ink-soft);
+  --tm-ink-faint: var(--color-ink-faint);
+  --tm-monster: var(--color-monster);
+  --tm-monster-dark: var(--color-monster-dark);
+  --tm-angel: var(--color-angel);
+  --tm-angel-dark: var(--color-angel-dark);
+  --tm-piece: var(--color-piece);
+  --tm-piece-dark: var(--color-piece-dark);
+  --tm-piece-ghost: var(--color-piece-ghost);
+  --tm-yes: var(--color-yes);
+  --tm-yes-dark: var(--color-yes-dark);
+  --tm-hmm: var(--color-hmm);
+  --tm-hmm-dark: var(--color-hmm-dark);
+
+  /* Everything lands with a small overshoot. Nothing in a game glides. */
+  --tm-ease: cubic-bezier(0.34, 1.5, 0.64, 1);
+  --tm-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --tm-tap: 44px;
+  --tm-lip: 5px; /* the hard bottom edge that makes a thing pressable */
+
+  color-scheme: light;
+}
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    background:
+      radial-gradient(
+          140% 70% at 50% 0%,
+          var(--tm-sky) 0%,
+          var(--tm-sky-low) 55%,
+          var(--tm-paper) 100%
+        )
+        fixed;
+    color: var(--tm-ink);
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+
+  button {
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--tm-ink);
+    outline-offset: 3px;
+    border-radius: 8px;
+  }
+}
+
+@layer components {
+  .tm-app {
+    user-select: none;
+    touch-action: manipulation;
+  }
+
+  .tm-display {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+
+  .tm-figure {
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+
+  /* ---- the press ----------------------------------------------------
+     One class does most of the "this is a game" work: a solid colour, a
+     darker lip underneath, and the whole thing drops onto the lip when
+     pressed. Physical, instant, no library.
+
+     Callers: do NOT set `transform` inline on a .tm-press — it out-
+     specifies the :active rule and silently kills the press. Wrap it in
+     a positioned parent and transform that instead.                   */
+
+  .tm-press {
+    position: relative;
+    display: grid;
+    place-items: center;
+    border-radius: 18px;
+    min-height: 3.4rem;
+    padding: 0.7rem 1.25rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--tm-ink);
+    background: var(--tm-cloud);
+    box-shadow: 0 var(--tm-lip) 0 0 var(--tm-ink-faint);
+    transform: translateY(0);
+    transition:
+      transform 90ms var(--tm-ease-out),
+      box-shadow 90ms var(--tm-ease-out),
+      filter 120ms linear;
+  }
+
+  .tm-press:active:not(:disabled) {
+    transform: translateY(var(--tm-lip));
+    box-shadow: 0 0 0 0 var(--tm-ink-faint);
+  }
+
+  .tm-press:disabled {
+    filter: grayscale(0.5);
+    opacity: 0.55;
+    cursor: default;
+  }
+
+  .tm-press-go {
+    color: #06301c;
+    background: var(--tm-monster);
+    box-shadow: 0 var(--tm-lip) 0 0 var(--tm-monster-dark);
+  }
+  .tm-press-go:active:not(:disabled) {
+    box-shadow: 0 0 0 0 var(--tm-monster-dark);
+  }
+
+  .tm-press-gold {
+    color: #3b2500;
+    background: var(--tm-angel);
+    box-shadow: 0 var(--tm-lip) 0 0 var(--tm-angel-dark);
+  }
+  .tm-press-gold:active:not(:disabled) {
+    box-shadow: 0 0 0 0 var(--tm-angel-dark);
+  }
+
+  .tm-card {
+    background: var(--tm-cloud);
+    border-radius: 22px;
+    box-shadow:
+      0 2px 0 0 rgba(44, 33, 64, 0.08),
+      0 10px 24px -14px rgba(44, 33, 64, 0.45);
+  }
+
+  .tm-bubble {
+    position: relative;
+    background: var(--tm-cloud);
+    border-radius: 20px;
+    padding: 0.85rem 1.1rem;
+    box-shadow: 0 6px 18px -10px rgba(44, 33, 64, 0.5);
+  }
+
+  .tm-pop {
+    animation: tm-pop 340ms var(--tm-ease) both;
+  }
+
+  .tm-bob {
+    animation: tm-bob 2.8s ease-in-out infinite;
+  }
+}
+
+/* One celebration, spent only when something is actually won. */
+@keyframes tm-pop {
+  0% {
+    transform: scale(0.86);
+  }
+  60% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes tm-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
