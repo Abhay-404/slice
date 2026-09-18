@@ -32,7 +32,9 @@ function load(childName: string): Seed {
   // starts near the bottom and can climb.
   const h = hash(childName || "x");
   const names = NAMES.filter((n) => n.toLowerCase() !== childName.toLowerCase()).slice(0, 6);
-  const base = names.map((_, i) => 20 + ((h >> (i * 4)) % 9) * 15 + i * 18);
+  // `>>>` — unsigned. A signed shift goes negative for some names, which
+  // gave a classmate negative XP and crashed "★".repeat(-1) on the home page.
+  const base = names.map((_, i) => 20 + ((h >>> (i * 4)) % 9) * 15 + i * 18);
   const seed = { names, base, day: today() };
   try {
     localStorage.setItem(KEY, JSON.stringify(seed));
@@ -45,9 +47,9 @@ export function classBoard(childName: string, childXp: number, childStars: numbe
   // Classmates drift upward a little per day since seeding, so the board isn't frozen.
   const days = Math.max(0, Math.floor((Date.parse(today()) - Date.parse(seed.day)) / 86400000));
   const rows: Row[] = seed.names.map((name, i) => {
-    const xp = seed.base[i] + days * (4 + (i % 3) * 3);
-    return { name, xp, stars: Math.min(15, Math.floor(xp / 28)) };
+    const xp = Math.max(0, seed.base[i] + days * (4 + (i % 3) * 3));
+    return { name, xp, stars: Math.max(0, Math.min(15, Math.floor(xp / 28))) };
   });
-  rows.push({ name: childName || "You", xp: childXp, stars: childStars, you: true });
+  rows.push({ name: childName || "You", xp: Math.max(0, childXp), stars: Math.max(0, childStars), you: true });
   return rows.sort((a, b) => b.xp - a.xp || b.stars - a.stars);
 }

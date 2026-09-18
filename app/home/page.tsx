@@ -87,7 +87,7 @@ export default function Home() {
                   </div>
                   {rec.done && (
                     <span className="tm-display shrink-0" style={{ color: "var(--tm-angel-dark)", fontSize: "0.95rem" }}>
-                      {"★".repeat(rec.stars)}
+                      {"★".repeat(Math.max(0, rec.stars))}
                     </span>
                   )}
                 </div>
@@ -172,7 +172,7 @@ function ClassBoard({ name, xp, stars }: { name: string; xp: number; stars: numb
               {r.name}
               {r.you ? " (you)" : ""}
             </span>
-            <span style={{ fontSize: "0.8rem", opacity: 0.8 }}>{"★".repeat(Math.min(5, r.stars))}</span>
+            <span style={{ fontSize: "0.8rem", opacity: 0.8 }}>{"★".repeat(Math.max(0, Math.min(5, r.stars)))}</span>
             <span className="tm-figure w-14 text-right" style={{ fontSize: "0.95rem" }}>
               {r.xp} XP
             </span>

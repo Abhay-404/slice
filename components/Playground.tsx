@@ -280,9 +280,9 @@ export default function Playground({ topic, mode }: { topic: Topic; mode: "play"
       {done ? (
         <div className="flex flex-col gap-2">
           <p className="tm-display m-0 text-center" style={{ fontSize: "1.1rem" }} aria-label={`${starsFor(hints, misses, steps.length)} out of 3 stars`}>
-            {"★".repeat(starsFor(hints, misses, steps.length))}
+            {"★".repeat(Math.max(0, starsFor(hints, misses, steps.length)))}
             <span style={{ opacity: 0.25 }} aria-hidden>
-              {"★".repeat(3 - starsFor(hints, misses, steps.length))}
+              {"★".repeat(Math.max(0, 3 - starsFor(hints, misses, steps.length)))}
             </span>
           </p>
           <Link href="/home" className="tm-press tm-press-go w-full">

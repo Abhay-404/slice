@@ -142,7 +142,7 @@ export default function Parents() {
               </p>
             </div>
             <span className="tm-display shrink-0" style={{ color: r.done ? "var(--tm-angel-dark)" : "var(--tm-ink-faint)" }}>
-              {r.done ? "★".repeat(r.stars) + "☆".repeat(3 - r.stars) : "—"}
+              {r.done ? "★".repeat(Math.max(0, r.stars)) + "☆".repeat(Math.max(0, 3 - r.stars)) : "—"}
             </span>
           </li>
         ))}
