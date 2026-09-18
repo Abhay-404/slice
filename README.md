@@ -71,14 +71,7 @@ Open `http://localhost:3000`. The mic needs a secure context — `localhost` cou
 
 Voice: `gemini-3.8-live`. Parent chat: `gemini-3.8-flash`. Both in one place: `lib/live/config.ts`.
 
-## Prior work
 
-Two earlier projects of mine fed into this and are cited rather than reused:
-
-- **[LessonLoom](https://github.com/Abhay-404/lessonloom)** — a multi-agent lesson generator with adversarial review. The pedagogy here (no lecture slides; concrete → representational → abstract; the naming arrives *after* the attempt) comes from its production spec.
-- **[Disha](https://github.com/Abhay-404/Disha)** — a voice-first companion for blind Windows users. The earcon vocabulary and the "describe, never point" rule for the tutor come from building that.
-
-Everything in this repository was built during the hackathon window.
 
 ## What I'd do next
 
